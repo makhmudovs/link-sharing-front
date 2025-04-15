@@ -1,4 +1,12 @@
-html {
-  font-family: "Roboto", sans-serif;
-  font-weight: 400;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.bg-mockup{
+    /* bg-[url(../assets/illustration-phone-mockup.svg)] bg-cover bg-center */
+    background-image: url('./assets/illustration-phone-mockup.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 500px;
 }

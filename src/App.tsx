@@ -1,24 +1,42 @@
-import { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider, useAuth } from "./auth";
+import { routeTree } from "./routeTree.gen";
+import { AlertProvider } from "./context/AlertContext";
+
+// Set up a Router instance
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  scrollRestoration: true,
+  context: {
+    auth: undefined!, // This will be set after we wrap the app in an AuthProvider
+  },
+});
+
+// Register things for typesafety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+function InnerApp() {
+  const auth = useAuth();
+  return <RouterProvider router={router} context={{ auth }} />;
+}
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <Box>
-      <Typography variant="h1">Vite + React</Typography>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </Box>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AlertProvider>
+          <InnerApp />
+        </AlertProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 
